@@ -13,7 +13,7 @@ def transfer_ncdm(k, alpha, beta, gamma=5.):
 def alpha_wdm(mx=1., mode="schneider", omega_x=0.27, h=0.7, gx=1.5, verbose=False):
     """Parameter of the power spectrum suppression for a given WDM thermal relic mass
     
-    Uses either the fit from Schneider (2013) or Bode (2001)
+    Uses either the fit from Schneider (2012) or Bode (2001)
 
     mx : thermal relic mass in eV
     mode : can be mode="schneider" (recommended) or "bode_varynu" or "bode_fixednu"
@@ -24,12 +24,11 @@ def alpha_wdm(mx=1., mode="schneider", omega_x=0.27, h=0.7, gx=1.5, verbose=Fals
     
     returns : the parameter alpha in units of Mpc/h
     """
-    #alpha is in h/mpc
-    if mode == "bode_fixednu": # next to (A7) of the bode paper, this is what music was trying to use, I think
+    if mode == "bode_fixednu": # next to (A7) of the bode paper
         return 0.05 * (omega_x/0.4)**0.15 * (h/0.65)**1.3 * (mx/1.)**-1.15 * (1.5/gx)**0.29
     elif mode == "bode_varynu": # This is the fitting formula in bode when allowing nu to vary
         return 0.048 * (omega_x/0.4)**0.15 * (h/0.65)**1.3 * (mx/1.)**-1.15 * (1.5/gx)**0.29
-    elif (mode == "murgia") | (mode == "schneider"): # This is the formula used in the murgia paper arxiv:1704.07838, it originates from the schneider paper
+    elif mode == "schneider": # arxiv:1112.0330 Schneider (2012)
         return 0.049 * (omega_x/0.25)**0.11 * (h/0.7)**1.22  * (mx/1.)**-1.11
     else:
         raise ValueError("Unknown mode %s" % mode)
@@ -59,6 +58,10 @@ def k_half_mode(alpha, beta, gamma):
     fraction = 0.5
     return 1./alpha * (fraction**(-1./gamma) - 1. )**(1./beta)
 
+def alpha_from_k_half_mode(khalf, beta, gamma):
+    """Calculates alpha, given the half-mode wavenumber"""
+    return 1./khalf * (2.**(1./gamma) - 1. )**(1./beta)
+
 def half_mode_volume(alpha, beta, gamma):
     """The Lagrangian volume that is associated with the halfmode scale"""
     khm = k_half_mode(alpha, beta, gamma)
@@ -79,6 +82,6 @@ def background_density(omega_m=0.31):
     
     return omega_m * rhocrit
 
-def half_mode_mass(alpha, beta, gamma, omgea_m=0.31):
+def half_mode_mass(alpha, beta, gamma, omega_m=0.31):
     """Calculates the half mode mass in units of Msol/h"""
-    return half_mode_volume(alpha, beta, gamma) * background_density(omega_m=omgea_m)
+    return half_mode_volume(alpha, beta, gamma) * background_density(omega_m=omega_m)

@@ -15,6 +15,7 @@ def get_mscales(beta, mhm=1., mode="halo"):
     """The scales where the mass function is surpressed by 20%, 50% and 80%
     
     beta : The slope parameter describing the power-spectrum surpression
+           This model was only tested in the range  1.5 <= beta <= 6
     mhm :  The half-mode mass (describing the scale of the cut-off). Use
           mhm=1. to get outputs in units of the half-mode mass.
     mode : can be 'halo' or 'satellite'
@@ -22,6 +23,11 @@ def get_mscales(beta, mhm=1., mode="halo"):
     returns: np.array with M20, M50, M80 as elements. Output masses are in the 
              same units as the input parameter mhm.
     """
+    if (beta > 6.) | (beta < 1.5):
+        import warnings
+        warnings.warn("beta = %.2f is outside the validated range [1.5 ... 6]!"
+                      " Usage at your own risk!" % beta, 
+                      UserWarning)
     if mode=="halo":
         mu = np.array((0.2651, 1.638, 16.51))
         nu = np.array((0.3656, -0.0994, -0.9466))
